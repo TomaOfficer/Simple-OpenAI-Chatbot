@@ -3,6 +3,8 @@
 <head>
 	<title>Simple OpenAI Chatbot with Custom Knowledge</title>
   <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
 </head>
   <body>
     <div id="chat-container">
@@ -46,7 +48,17 @@
           const chatMessages = document.getElementById('chat-messages');
           const messageElement = document.createElement('div');
           messageElement.className = `message ${sender}-message`;
-          messageElement.textContent = message;
+
+          if (sender === 'assistant') {
+              // Parse markdown and sanitize HTML for assistant messages
+              const parsedMessage = marked.parse(message);
+              const sanitizedMessage = DOMPurify.sanitize(parsedMessage);
+              messageElement.innerHTML = sanitizedMessage;
+          } else {
+              // For user messages, just use text content
+              messageElement.textContent = message;
+          }
+        
           chatMessages.appendChild(messageElement);
 
           // Scroll to the bottom of the chat
