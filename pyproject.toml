@@ -8,6 +8,8 @@ authors = ["Your Name <you@example.com>"]
 python = ">=3.10.0,<3.11"
 replit = "^3.2.4"
 Flask = "^2.2.0"
+openai = "^1.40.3"
+python-dotenv = "^1.0.1"
 
 [tool.pyright]
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md
