@@ -5,45 +5,60 @@
   <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
 </head>
   <body>
-    <center>
-      <div class="box">
-        <center>
-          <div class="box-text">
-            <h1>Welcome to the Chatbot</h1>
-            <p>Start chatting below:</p>
-
-            <!-- Chatbot UI -->
-            <div id="chatbot-ui">
-              <input type="text" id="user-message" placeholder="Type your message here" />
-              <button onclick="sendMessage()">Send</button>
-            </div>
-
-            <!-- Chatbot response area -->
-            <div id="chatbot-response">
-              <!-- Responses will be displayed here -->
-            </div>
-          </div>
-        </center>
+    <div id="chat-container">
+      <div id="chat-messages">
+          <!-- Chat messages will be dynamically added here -->
       </div>
-    </center>
+      <div id="input-area">
+          <input type="text" id="user-message" placeholder="Type your message here">
+          <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
     <script>
       function sendMessage() {
-        const userMessage = document.getElementById('user-message').value;
+          const userMessage = document.getElementById('user-message').value;
+          if (userMessage.trim() === '') return;
 
-        fetch('/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ message: userMessage })
-        })
-        .then(response => response.json())
-        .then(data => {
-          // Display the assistant's response in the chatbot-response div
-          document.getElementById('chatbot-response').innerHTML = `<p>${data.response}</p>`;
-        })
-        .catch(error => console.error('Error:', error));
+          // Add user message to chat
+          addMessageToChat('user', userMessage);
+
+          // Clear input field
+          document.getElementById('user-message').value = '';
+
+          // Send message to server and get response
+          fetch('/chat', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ message: userMessage })
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Add assistant's response to chat
+              addMessageToChat('assistant', data.response);
+          })
+          .catch(error => console.error('Error:', error));
       }
+
+      function addMessageToChat(sender, message) {
+          const chatMessages = document.getElementById('chat-messages');
+          const messageElement = document.createElement('div');
+          messageElement.className = `message ${sender}-message`;
+          messageElement.textContent = message;
+          chatMessages.appendChild(messageElement);
+
+          // Scroll to the bottom of the chat
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Allow sending message with Enter key
+      document.getElementById('user-message').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              sendMessage();
+          }
+      });
     </script>
   </body>
 </html>
