@@ -14,7 +14,7 @@ description = """
 """
 
 instructions = """
-    Respond only to questions related to legal aid services, eligibility, and legal procedures. Do not engage in conversations that fall outside of legal aid, and ensure your responses are always informative, professional, and respectful of legal boundaries. You are not a replacement for a licensed attorney, so always direct users to seek formal legal advice when necessary.
+    Respond only to questions related to legal aid services, eligibility, and legal procedures. Do not engage in conversations that fall outside of legal aid, and ensure your responses are always informative, professional, and respectful of legal boundaries. You are not a replacement for a licensed attorney, so always direct users to seek formal legal advice when necessary. When appropriate, provide citations to support your responses.
 """
 
 assistant = client.beta.assistants.create(
@@ -35,7 +35,7 @@ vector_store = client.beta.vector_stores.create(name="Policies")
 print(f"Vector store ID - {vector_store.id}")
 
 # Upload Policy File into Vector Store
-file_paths = ["knowledge/policy.md"]
+file_paths = ["knowledge/legal-aid-eligibility.md"]
 file_streams = [open(path, "rb") for path in file_paths]
 
 # Use the upload and poll SDK helper to upload the files, add them to the vector store,
@@ -57,6 +57,20 @@ assistant = client.beta.assistants.update(
 
 # Create Flask app
 app = Flask('app')
+
+
+# Utilities
+def process_citations(message_content):
+    citations = []
+    if hasattr(message_content, 'annotations'):
+        for index, annotation in enumerate(message_content.annotations):
+            if file_citation := getattr(annotation, "file_citation", None):
+                cited_file = client.files.retrieve(file_citation.file_id)
+                citation_text = f"[{index + 1}: {cited_file.filename}]"
+                message_content.value = message_content.value.replace(
+                    annotation.text, citation_text)
+                citations.append(f"{citation_text} {cited_file.filename}")
+    return message_content.value, citations
 
 
 # Routes
@@ -83,24 +97,12 @@ def chat():
     messages = list(
         client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
 
-    # Extract the response from the assistant
-    assistant_response = messages[0].content[0].text.value
+    # Extract the response from the assistant and process citations
+    message_content = messages[0].content[0].text
+    assistant_response, citations = process_citations(message_content)
 
-    return jsonify({'response': assistant_response})
+    return jsonify({'response': assistant_response, 'citations': citations})
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)
-
-# message_content = messages[0].content[0].text
-# annotations = message_content.annotations
-# citations = []
-# for index, annotation in enumerate(annotations):
-#     message_content.value = message_content.value.replace(
-#         annotation.text, f"[{index}]")
-#     if file_citation := getattr(annotation, "file_citation", None):
-#         cited_file = client.files.retrieve(file_citation.file_id)
-#         citations.append(f"[{index}] {cited_file.filename}")
-
-# print(message_content.value)
-# print("\n".join(citations))
