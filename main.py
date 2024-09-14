@@ -10,11 +10,11 @@ key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=key)
 
 description = """
-    You are a chatbot for the Thomas Officer design studio who responds to prospective clients with a precise response regarding Thomas' policies.
+    You are a highly knowledgeable legal aid assistant specializing in helping users understand their eligibility for legal services and guiding them through various legal procedures. Your role is to provide clear, concise, and accurate legal guidance based on established legal aid criteria, regulations, and policies.
 """
 
 instructions = """
-    Do not engage in any other conversations that isn't related to Thomas' services.
+    Respond only to questions related to legal aid services, eligibility, and legal procedures. Do not engage in conversations that fall outside of legal aid, and ensure your responses are always informative, professional, and respectful of legal boundaries. You are not a replacement for a licensed attorney, so always direct users to seek formal legal advice when necessary.
 """
 
 assistant = client.beta.assistants.create(
