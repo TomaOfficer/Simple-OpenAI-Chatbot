@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Simple OpenAI Chatbot with Custom Knowledge</title>
-  <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
 </head>
@@ -11,66 +11,94 @@
       <div id="chat-messages">
           <!-- Chat messages will be dynamically added here -->
       </div>
+      <div id="spinner" class="spinner"></div>
       <div id="input-area">
           <input type="text" id="user-message" placeholder="Type your message here">
-          <button onclick="sendMessage()">Send</button>
+          <button id="send-button" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="send-icon">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+            </svg>
+          </button>
       </div>
     </div>
 
     <script>
-      function sendMessage() {
-          const userMessage = document.getElementById('user-message').value;
-          if (userMessage.trim() === '') return;
+        const userMessageInput = document.getElementById('user-message');
+        const sendButton = document.getElementById('send-button');
 
-          // Add user message to chat
-          addMessageToChat('user', userMessage);
+        userMessageInput.addEventListener('input', function() {
+            sendButton.disabled = this.value.trim() === '';
+        });
+      
+        function sendMessage() {
+            const userMessage = userMessageInput.value;
+            if (userMessage.trim() === '') return;
+          
+            // Add user message to chat
+            addMessageToChat('user', userMessage);
+          
+            // Clear input field and disable button
+            userMessageInput.value = '';
+            sendButton.disabled = true;
 
-          // Clear input field
-          document.getElementById('user-message').value = '';
+            // Show spinner
+            document.getElementById('spinner').style.display = 'block';
+            // Send message to server and get response
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
+                // Add assistant's response to chat
+                addMessageToChat('assistant', data.response);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Hide spinner in case of error
+                document.getElementById('spinner').style.display = 'none';
+            });
+        }
 
-          // Send message to server and get response
-          fetch('/chat', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ message: userMessage })
-          })
-          .then(response => response.json())
-          .then(data => {
-              // Add assistant's response to chat
-              addMessageToChat('assistant', data.response);
-          })
-          .catch(error => console.error('Error:', error));
-      }
+        function addMessageToChat(sender, message) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${sender}-message`;
+            if (sender === 'assistant') {
+                // Parse markdown and sanitize HTML for assistant messages
+                const parsedMessage = marked.parse(message);
+                const sanitizedMessage = DOMPurify.sanitize(parsedMessage);
+                messageElement.innerHTML = sanitizedMessage;
+            } else {
+                // For user messages, just use text content
+                messageElement.textContent = message;
+            }
 
-      function addMessageToChat(sender, message) {
-          const chatMessages = document.getElementById('chat-messages');
-          const messageElement = document.createElement('div');
-          messageElement.className = `message ${sender}-message`;
+            chatMessages.appendChild(messageElement);
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
-          if (sender === 'assistant') {
-              // Parse markdown and sanitize HTML for assistant messages
-              const parsedMessage = marked.parse(message);
-              const sanitizedMessage = DOMPurify.sanitize(parsedMessage);
-              messageElement.innerHTML = sanitizedMessage;
-          } else {
-              // For user messages, just use text content
-              messageElement.textContent = message;
-          }
-        
-          chatMessages.appendChild(messageElement);
+        // Enable/disable send button based on input
+        userMessageInput.addEventListener('input', function() {
+            sendButton.disabled = this.value.trim() === '';
+        });
 
-          // Scroll to the bottom of the chat
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
+        // Send message on button click
+        sendButton.addEventListener('click', sendMessage);
 
-      // Allow sending message with Enter key
-      document.getElementById('user-message').addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-              sendMessage();
-          }
-      });
+        // Allow sending message with Enter key
+        userMessageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !sendButton.disabled) {
+                sendMessage();
+            }
+        });
     </script>
   </body>
 </html>

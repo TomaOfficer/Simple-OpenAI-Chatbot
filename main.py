@@ -56,7 +56,7 @@ assistant = client.beta.assistants.update(
 )
 
 # Create Flask app
-app = Flask('app')
+app = Flask('app', static_folder='public')
 
 
 # Utilities
