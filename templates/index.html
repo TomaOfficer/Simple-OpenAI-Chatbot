@@ -11,14 +11,39 @@
           <div class="box-text">
             <h1>Welcome to the Chatbot</h1>
             <p>Start chatting below:</p>
-            <!-- Placeholder for chatbot UI -->
+
+            <!-- Chatbot UI -->
             <div id="chatbot-ui">
-              <!-- You can add your chatbot UI here -->
-              <p>Chatbot UI will go here...</p>
+              <input type="text" id="user-message" placeholder="Type your message here" />
+              <button onclick="sendMessage()">Send</button>
+            </div>
+
+            <!-- Chatbot response area -->
+            <div id="chatbot-response">
+              <!-- Responses will be displayed here -->
             </div>
           </div>
         </center>
       </div>
     </center>
+    <script>
+      function sendMessage() {
+        const userMessage = document.getElementById('user-message').value;
+
+        fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Display the assistant's response in the chatbot-response div
+          document.getElementById('chatbot-response').innerHTML = `<p>${data.response}</p>`;
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    </script>
   </body>
 </html>

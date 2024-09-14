@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -26,19 +26,6 @@ assistant = client.beta.assistants.create(
         "type": "file_search"
     }],
 )
-
-# Create Flask app
-app = Flask('app')
-
-
-# Routes
-@app.route('/')
-def hello_world():
-    return render_template('index.html')
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
 
 # For debugging
 print(f"Assistant created with ID: {assistant.id}")
@@ -68,31 +55,52 @@ assistant = client.beta.assistants.update(
     }},
 )
 
-# Create a thread
-thread = client.beta.threads.create(
-    messages=[{
+# Create Flask app
+app = Flask('app')
+
+
+# Routes
+@app.route('/')
+def hello_world():
+    return render_template('index.html')
+
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_message = request.json.get('message')
+
+    # Create a thread
+    thread = client.beta.threads.create(messages=[{
         "role": "user",
-        "content": "What is Thomas' working hours?",
+        "content": user_message,
     }])
 
-# Use the create and poll SDK helper to create a run and poll the status of
-# the run until it's in a terminal state.
+    # Use the create and poll SDK helper to create a run and poll the status of
+    # the run until it's in a terminal state.
+    run = client.beta.threads.runs.create_and_poll(thread_id=thread.id,
+                                                   assistant_id=assistant.id)
 
-run = client.beta.threads.runs.create_and_poll(thread_id=thread.id,
-                                               assistant_id=assistant.id)
+    messages = list(
+        client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
 
-messages = list(
-    client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
+    # Extract the response from the assistant
+    assistant_response = messages[0].content[0].text.value
 
-message_content = messages[0].content[0].text
-annotations = message_content.annotations
-citations = []
-for index, annotation in enumerate(annotations):
-    message_content.value = message_content.value.replace(
-        annotation.text, f"[{index}]")
-    if file_citation := getattr(annotation, "file_citation", None):
-        cited_file = client.files.retrieve(file_citation.file_id)
-        citations.append(f"[{index}] {cited_file.filename}")
+    return jsonify({'response': assistant_response})
 
-print(message_content.value)
-print("\n".join(citations))
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)
+
+# message_content = messages[0].content[0].text
+# annotations = message_content.annotations
+# citations = []
+# for index, annotation in enumerate(annotations):
+#     message_content.value = message_content.value.replace(
+#         annotation.text, f"[{index}]")
+#     if file_citation := getattr(annotation, "file_citation", None):
+#         cited_file = client.files.retrieve(file_citation.file_id)
+#         citations.append(f"[{index}] {cited_file.filename}")
+
+# print(message_content.value)
+# print("\n".join(citations))
