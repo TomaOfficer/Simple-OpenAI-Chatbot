@@ -88,16 +88,37 @@ body, html {
 #send-button:hover {
     opacity: 0.8;
 }
-.spinner {
-    display: none;
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(0, 123, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: #007bff;
-    animation: spin 1s ease-in-out infinite;
-    margin: 20px auto;
+.loading-dots {
+    display: inline-block; 
+    align-self: flex-end;
+    background-color: #e9ecef;
+    border-radius: 20px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
 }
-@keyframes spin {
-    to { transform: rotate(360deg); }
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #333;
+    margin-right: 3px;
+    animation: pulse 1.5s infinite;
+}
+.dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+.dot:nth-child(3) {
+    animation-delay: 0.6s;
+    margin-right: 0;
+}
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

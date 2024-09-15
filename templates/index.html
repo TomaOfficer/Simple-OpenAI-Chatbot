@@ -8,11 +8,10 @@
 </head>
   <body>
     <div id="chat-container">
-      <div id="chat-messages">
-          <!-- Chat messages will be dynamically added here -->
-      </div>
-      <div id="spinner" class="spinner"></div>
-      <div id="input-area">
+        <div id="chat-messages">
+            <!-- Chat messages will be dynamically added here -->
+        </div>
+        <div id="input-area">
           <input type="text" id="user-message" placeholder="Type your message here">
           <button id="send-button" disabled>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="send-icon">
@@ -26,10 +25,20 @@
     <script>
         const userMessageInput = document.getElementById('user-message');
         const sendButton = document.getElementById('send-button');
-
+        const chatMessages = document.getElementById('chat-messages'); 
+        
         userMessageInput.addEventListener('input', function() {
             sendButton.disabled = this.value.trim() === '';
         });
+
+        function addLoadingDots() {
+            const loadingDots = document.createElement('div');
+            loadingDots.className = 'loading-dots';
+            loadingDots.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            chatMessages.appendChild(loadingDots);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return loadingDots;
+        }
       
         function sendMessage() {
             const userMessage = userMessageInput.value;
@@ -42,8 +51,9 @@
             userMessageInput.value = '';
             sendButton.disabled = true;
 
-            // Show spinner
-            document.getElementById('spinner').style.display = 'block';
+            // Show loading dots
+            const loadingDots = addLoadingDots();
+
             // Send message to server and get response
             fetch('/chat', {
                 method: 'POST',
@@ -54,15 +64,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Hide spinner
-                document.getElementById('spinner').style.display = 'none';
+                // Hide loading dots
+                loadingDots.remove();
                 // Add assistant's response to chat
                 addMessageToChat('assistant', data.response);
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Hide spinner in case of error
-                document.getElementById('spinner').style.display = 'none';
+                // Hide loading dots in case of error
+                loadingDots.remove();
             });
         }
 
