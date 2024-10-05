@@ -1,93 +1,85 @@
-# Python Flask ReplAuth
+# Simple OpenAI Chat
+This repository serves as a template for building an AI-powered Retrieval-Augmented Generation (RAG) chatbot using OpenAI's Assistant API with the file search tool. The goal of this project is to enable anyone to experience the capabilities of a RAG-based app, and to invite legal professionals to consider how they might leverage this technology to create powerful, knowledge-driven applications.
 
-Using the ReplAuth with Flask is super easy! First we create a new Flask app: 
+Table of Contents: 
+- Introduction
+- Getting Started
+  - Prerequisites
+  - Project Structure
+- Configuration
+  - Setting Up the OpenAI API Key
+  - Customizing the Knowledge Base
+- Running the Application
+- Deploying the Application
+- Troubleshooting
 
-<details>
-  <summary>Import Flask and create new Flask app</summary>
+## Introduction
+This project template provides a ready-to-use framework for building an AI chatbot that integrates with your own custom knowledge base. It uses OpenAI's Assistant API and the file search tool to deliver responses grounded in the documents you provide, making it an ideal starting point for legal professionals or anyone looking to build a specialized AI assistant.
 
-```python
-from flask import Flask, render_template, request
-app = Flask('app')
-@app.route('/')
-```
-</details>
+### Why Build This?
+The template is designed to show how combining a powerful language model with document retrieval (RAG) can enhance the accuracy and relevance of responses. See firsthand how a RAG-based system works and experiment with building your own.
 
-And then we request the headers: 
+## Getting Started
+### Prerequisites
+Before setting up the application, ensure you have the following:
 
-<details>
-  <summary>Requested Headers:</summary>
+1. A Replit account: You can sign up for free at replit.com
+2. An OpenAI API key: You can get one from OpenAI's API key page.
+3. A knowledge base file: The chatbot leverages a Markdown file to inform its responses. You will replace the existing example with your own file.
 
-```python
-def hello_world():
-    print(request.headers)
-    return render_template(
-        'index.html',
-        user_id=request.headers['X-Replit-User-Id'],
-        user_name=request.headers['X-Replit-User-Name'],
-        user_roles=request.headers['X-Replit-User-Roles'],
-        user_bio=request.headers['X-Replit-User-Bio'],
-        user_profile_image=request.headers['X-Replit-User-Profile-Image'],
-        user_teams=request.headers['X-Replit-User-Teams'],
-        user_url=request.headers['X-Replit-User-Url']
-    )
-```
-</details>
+### Project Structure
+The project is organized into several key directories and files:
 
-In this code we've requested all the possible headers, which are these:
+`knowledge/`: This directory contains your knowledge base files in Markdown format. These files are used by the chatbot to provide informed responses based on their content. Replace the provided legal-aid-eligibility.md file with your own Markdown file(s) as needed.
 
-<details>
-  <summary>All Replit Headers</summary>
+`public/`: Contains static assets like CSS stylesheets for styling the front-end of your application. The included style.css can be modified to customize the appearance of your app.
 
-```python
-X-Replit-User-Bio
-X-Replit-User-Id
-X-Replit-User-Name
-X-Replit-User-Profile-Image
-X-Replit-User-Roles
-X-Replit-User-Teams
-X-Replit-User-Url
-```
-</details>
+`templates/`: Holds HTML templates that define the structure of your web pages. The main template is index.html, which renders the primary interface for interacting with the chatbot.
 
-Once we've requested all these headers, we can show the information we've got after the user has passed through the Auth. This info will be displayed on the console, but can also be displayed in a html file.
+`main.py`: The core application file, written in Python using Flask. This file handles API requests, integrates with the OpenAI Assistant, and serves the web application. It also includes configuration for setting up the assistant and linking it with your knowledge base.
 
-We can show this by displaying the variable assigned to a header in a HTML tag (it can also be shown without a tag). If we wanted to show the username of the user we would put this:
+## Configuration
+### Setting Up the OpenAI API Key
+Sign up or log in to OpenAI and navigate to the API keys section.
+Click Create new secret key and copy the generated key.
+In Replit, click on the Secrets tab in the left-hand sidebar.
+Add a new secret:
+Key: OPENAI_API_KEY
+Value: Paste your OpenAI API key here.
+Click Save to securely store the key in Replit. This key will now be accessible to your application.
 
-```html
-<h1>{{ user_name }}</h1>
-```
+### Customizing the Knowledge Base
+To make the chatbot relevant to your domain, replace the sample knowledge base file with your own:
 
-And the output will be a heading (h1) with the username. 
+Navigate to the knowledge/ directory in your Replit project.
+Replace the legal-aid-eligibility.md file with a new Markdown file that contains the content you want your assistant to use.
+If you use a different filename or add multiple files, update the file path references in main.py to include these new files.
 
-# ReplAuth FAQ 
+## Running the Application
+Click the green Run button at the top of the Replit editor.
+The Flask server will start and display a URL in the Replit console (e.g., https://your-repl-name.repl.co).
+Open the URL to access your AI chatbot in a new tab.
+You can now interact with the chatbot by asking questions related to your knowledge base.
+Note: On the first run, the application might take longer to start as it installs dependencies and initializes with your knowledge base. Subsequent runs will be faster.
 
-The question is in a quote and in italic and the answer is in a bullet point.
+## Deploying the Application
+Although Replit allows free deployment of static sites, this chatbot is a dynamic web application built with Flask and requires a server to run, which cannot be hosted as a static site. However, students can still share and run their chatbot on Replit for free:
 
-<details>
-  <summary>ReplAuth FAQ</summary>
-  
-  > *How many ReplAuths are there?*
-  
-  - There are 2 repl auths!
- ---
-  > *Which ReplAuths are there?*
-  
-  - Node.js and Python Flask
----
-  > *Is there a Replit Documentation on ReplAuths?*
+1. Run the Chatbot on Replit
+After configuring your app, click the green Run button at the top of the Replit editor.
+Once the server starts, Replit will provide a URL (e.g., https://your-repl-name.repl.co) in the Replit console.
 
-  - Yes! You can find it in the [Replit Docs](https://docs.replit.com)
-</details>
+2. Share the App
+You can share this URL with anyone, and they will be able to interact with your chatbot as long as the Repl is active.
 
-# Template
+3. Keep the App Running
+If you want your app to stay active without manually starting it each time, you'll need to upgrade to Replit’s Hacker or Pro plan, which includes the Always On feature. This option ensures your server remains running 24/7.
 
-**Name**: Python Flask ReplAuth
+While deploying to Replit's static site hosting is not possible for this dynamic chatbot, students can still experience the full functionality of the chatbot by running it directly within the Replit environment and sharing the active link.
 
-**Description**: Python Flask ReplAuth is easy and useful to use! What are you waiting for? Start using ReplAuth today!
+## Troubleshooting
+Missing API Key: If the app returns an error related to the OpenAI API key, double-check that you have added the key to the Secrets tab and that it matches the variable name OPENAI_API_KEY.
 
-# Questions?
+Long Load Times: The first run can be slow due to dependency installation and file indexing. If it takes too long, try stopping and re-running the app.
 
-If you have any question please look at our support resources:
-
-- [Replit Docs](https://docs.replit.com)
-- [Ask forum](https://ask.replit.com)
+Knowledge Base Not Recognized: Ensure your Markdown file is correctly formatted and the path is properly referenced in main.py.
