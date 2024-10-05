@@ -1,5 +1,4 @@
 entrypoint = "main.py"
-run = "python3 main.py"
 
 modules = ["python-3.10:v20-20230824-f46249a"]
 
@@ -9,8 +8,8 @@ hidden = [".pythonlibs"]
 channel = "stable-23_05"
 
 [deployment]
-deploymentTarget = "static"
-publicDir = "public"
+deploymentTarget = "cloudrun"
+run = ["sh", "-c", "python3 main.py"]
 
 [[ports]]
 localPort = 8080

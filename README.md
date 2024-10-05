@@ -74,8 +74,9 @@ You can share this URL with anyone, and they will be able to interact with your 
 3. Deploy the App
 To make your app permanently accessible, you can deploy it on Replit. Here’s how:
 - Click the Deploy button in the Replit editor.
-- When prompted to enter a Run Command, type: run
-This command uses the configuration specified in your .replit file to start the Flask server (python3 main.py). Complete the deployment process, and Replit will provide you with a permanent URL.
+- When prompted to enter a Run Command, type: python3 main.py
+This command starts the Flask server (python3 main.py).
+Complete the deployment process, and Replit will provide you with a permanent URL.
 
 4. Keep the App Running
 If you want your app to stay active without manually starting it each time, you'll need to upgrade to Replit’s Hacker or Pro plan, which includes the Always On feature. This option ensures your server remains running 24/7.
