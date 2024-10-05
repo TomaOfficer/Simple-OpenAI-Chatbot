@@ -66,16 +66,21 @@ Note: On the first run, the application might take longer to start as it install
 Although Replit allows free deployment of static sites, this chatbot is a dynamic web application built with Flask and requires a server to run, which cannot be hosted as a static site. However, students can still share and run their chatbot on Replit for free:
 
 1. Run the Chatbot on Replit
-After configuring your app, click the green Run button at the top of the Replit editor.
-Once the server starts, Replit will provide a URL (e.g., https://your-repl-name.repl.co) in the Replit console.
+After configuring your app, click the green Run button at the top of the Replit editor. Once the server starts, Replit will provide a URL (e.g., https://your-repl-name.repl.co) in the Replit console.
 
 2. Share the App
 You can share this URL with anyone, and they will be able to interact with your chatbot as long as the Repl is active.
 
-3. Keep the App Running
+3. Deploy the App
+To make your app permanently accessible, you can deploy it on Replit. Here’s how:
+- Click the Deploy button in the Replit editor.
+- When prompted to enter a Run Command, type: run
+This command uses the configuration specified in your .replit file to start the Flask server (python3 main.py). Complete the deployment process, and Replit will provide you with a permanent URL.
+
+4. Keep the App Running
 If you want your app to stay active without manually starting it each time, you'll need to upgrade to Replit’s Hacker or Pro plan, which includes the Always On feature. This option ensures your server remains running 24/7.
 
-While deploying to Replit's static site hosting is not possible for this dynamic chatbot, students can still experience the full functionality of the chatbot by running it directly within the Replit environment and sharing the active link.
+While deploying to Replit's static site hosting is not possible for this dynamic chatbot, students can still experience the full functionality of the chatbot by running it directly within the Replit environment, sharing the active link, or deploying it with the correct run command.
 
 ## Troubleshooting
 Missing API Key: If the app returns an error related to the OpenAI API key, double-check that you have added the key to the Secrets tab and that it matches the variable name OPENAI_API_KEY.
